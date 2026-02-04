@@ -1,54 +1,70 @@
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Scanner;
 
-public class main {
-  public static void main(String[] args) {
-    Scanner scanner = new Scanner(System.in);
-    // We use LinkedHashMap to keep the students in the order they were entered
-    Map<String, String> students = new LinkedHashMap<>();
+public class Main {
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
 
-    System.out.println("Please provide the student names and then q to quit");
+        String paymentType = before_or_after(scan);
 
-    // 1. Collect Names
-    while (true) {
-      System.out.print("> ");
-      String input = scanner.nextLine().trim();
-      if (input.equalsIgnoreCase("q")) {
-        break;
-      }
-      if (!input.isEmpty()) {
-        students.put(input, "N"); // Default status is 'N'
-      }
-    }
+        double amountSpent = 0.0;
+        double gallonsPurchased = 0.0;
 
-    // 2. Validate early exit
-    if (students.isEmpty()) {
-      System.out.println("No students were provided");
-      return;
-    }
+        if (paymentType.equalsIgnoreCase("before")) {
+            System.out.println("How much are you spending?");
+            System.out.print("> ");
+            amountSpent = scan.nextDouble();
 
-    // 3. Action Menu
-    while (true) {
-      System.out.print("[check] sign ins, [sign] in, or [q]uit: ");
-      String action = scanner.nextLine().trim().toLowerCase();
-
-      if (action.equals("q")) {
-        break;
-      } else if (action.equals("check")) {
-        // Print each student and their status
-        for (Map.Entry<String, String> entry : students.entrySet()) {
-          System.out.println("> " + entry.getKey() + ": " + entry.getValue());
-        }
-      } else if (action.equals("sign")) {
-        System.out.print("> ");
-        String nameToSign = scanner.nextLine().trim();
-        if (students.containsKey(nameToSign)) {
-          students.put(nameToSign, "Y");
+            double price = get_grade(scan);
+            gallonsPurchased = get_gallons(amountSpent, price);
         } else {
-          System.out.println("Student not found.");
+            double price = get_grade(scan);
+
+            System.out.println("How many gallons of gas did you pump?");
+            System.out.print("> ");
+            gallonsPurchased = scan.nextDouble();
+
+            amountSpent = calculate_total_cost(gallonsPurchased, price);
         }
-      }
+
+        System.out.println("Thank you for your purchase!");
+        System.out.println("Payment: " + paymentType.toLowerCase());
+        System.out.printf("Amount spent: $%.2f%n", amountSpent);
+        System.out.printf("Gallons purchased: %.1f%n", gallonsPurchased);
+
+        scan.close();
     }
-  }
+
+    public static String before_or_after(Scanner scan) {
+        System.out.println("Pay before or after?");
+        System.out.print("> ");
+        return scan.next();
+    }
+
+    public static double get_grade(Scanner scan) {
+        System.out.println("What grade?");
+        System.out.println("- Regular $2.50/gal");
+        System.out.println("- Mid-grade $3.00/gal");
+        System.out.println("- Premium $3.50/gal");
+        System.out.print("> ");
+
+        String grade = scan.next();
+
+        if (grade.equalsIgnoreCase("Regular")) {
+            return 2.50;
+        } else if (grade.equalsIgnoreCase("Mid-grade")) {
+            return 3.00;
+        } else if (grade.equalsIgnoreCase("Premium")) {
+            return 3.50;
+        } else {
+            return 0.0;
+        }
+    }
+
+    public static double get_gallons(double amountSpent, double pricePerGallon) {
+        return amountSpent / pricePerGallon;
+    }
+
+    public static double calculate_total_cost(double gallons, double pricePerGallon) {
+        return gallons * pricePerGallon;
+    }
 }
